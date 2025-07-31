@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: main  # Force checkout main branch where chess.py and requirements.txt reside
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -21,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests pandas dash dash-bootstrap-components plotly
+        pip install -r requirements.txt
 
     - name: Run chess dashboard script
       run: python chess.py
