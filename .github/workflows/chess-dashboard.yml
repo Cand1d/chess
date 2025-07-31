@@ -2,7 +2,7 @@ name: Daily Chess Dashboard
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs daily at midnight UTC
+    - cron: '0 0 * * *' # Runs daily at midnight UTC (01:00 AM CEST)
   workflow_dispatch: # Allows manual trigger
 
 jobs:
@@ -24,9 +24,7 @@ jobs:
         pip install requests pandas dash dash-bootstrap-components plotly
 
     - name: Run chess dashboard script
-      run: |
-        python chess.py
-        mv output.html index.html # Assuming script outputs to output.html
+      run: python chess.py
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
