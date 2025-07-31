@@ -46,10 +46,8 @@ def extract_daily_stats(games):
     return df
 
 # --- DYNAMIC MONTHS ---
-today = datetime.utcnow()
-this_month = (today.year, today.month)
-last_month = ((today.replace(day=1) - timedelta(days=1)).year,
-              (today.replace(day=1) - timedelta(days=1)).month)
+this_month = (2025, 7)  # Known data month
+last_month = (2025, 6)
 
 # --- FETCH & COMBINE ---
 games_combined = fetch_bullet_games(username, *last_month) + fetch_bullet_games(username, *this_month)
@@ -101,9 +99,6 @@ app.layout = html.Div([
         style={"textAlign": "center"}
     ) if not df.empty else html.P("No data available.", className="text-center")
 ], style={"maxWidth": "1200px", "margin": "auto"})
-
-# Save dashboard as HTML
-app.run_server(mode="external", port=8050, debug=False)
 
 # Save dashboard as HTML
 with open("index.html", "w") as f:
