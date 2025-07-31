@@ -106,5 +106,7 @@ app.layout = html.Div([
 
 # Save dashboard as HTML
 app.run_server(mode="external", port=8050, debug=False)
-with open("output.html", "w") as f:
-    f.write(app.index())
+
+# Save dashboard as HTML
+with open("index.html", "w") as f:
+    f.write(app._generate_html())
