@@ -45,8 +45,12 @@ def extract_daily_stats(games):
     return df
 
 # --- DYNAMIC MONTHS ---
-this_month = (2025, 7)  # Known data month
-last_month = (2025, 6)
+today = datetime.utcnow().date()
+this_month = (today.year, today.month)
+if today.month == 1:
+    last_month = (today.year - 1, 12)
+else:
+    last_month = (today.year, today.month - 1)
 
 # --- FETCH & COMBINE ---
 games_combined = fetch_bullet_games(username, *last_month) + fetch_bullet_games(username, *this_month)
@@ -110,4 +114,4 @@ html_content = f"""
 """
 with open("index.html", "w") as f:
     f.write(html_content)
-    print("Generated index.html")
+print("Generated index.html")
