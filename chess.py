@@ -102,4 +102,4 @@ app.layout = html.Div([
 
 # Save dashboard as HTML
 with open("index.html", "w") as f:
-    f.write(app._generate_html())
+    f.write(app.index())
