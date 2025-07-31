@@ -80,10 +80,10 @@ if not df.empty:
         yaxis2=dict(title="Win Rate (%)", side="right", overlaying="y"),
         legend=dict(x=0.1, y=1.1, orientation="h")
     )
+    fig.update_layout(layout)
 else:
     fig = go.Figure(data=[go.Bar(x=[], y=[], name="No Data"), go.Scatter(x=[], y=[], name="No Data")])
-    layout = go.Layout(title="No Bullet Games Found", height=500)
-    fig.update_layout(layout)
+    fig.update_layout(title="No Bullet Games Found", height=500)
 
 # --- GENERATE HTML ---
 html_content = f"""
@@ -102,7 +102,7 @@ html_content = f"""
 </head>
 <body>
     <h1>Bullet Chess Dashboard – Last 2 Months</h1>
-    {pio.to_html(fig, full_html=False)}
+    {pio.to_html(fig, full_html=False, include_plotlyjs='cdn')}
     <h3>Daily Summary Table</h3>
     {df.to_html(index=False, classes='table', justify='center') if not df.empty else '<p>No data available.</p>'}
 </body>
