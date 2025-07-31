@@ -1,9 +1,8 @@
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
-from dash import Dash, html, dcc
 import plotly.graph_objs as go
-import dash_bootstrap_components as dbc
+import plotly.io as pio
 
 # --- CONFIG ---
 username = "cand5d".lower()
@@ -51,11 +50,10 @@ last_month = (2025, 6)
 
 # --- FETCH & COMBINE ---
 games_combined = fetch_bullet_games(username, *last_month) + fetch_bullet_games(username, *this_month)
+print(f"Fetched {len(games_combined)} games")
 df = extract_daily_stats(games_combined)
 
-# --- DASH APP ---
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-
+# --- PLOT ---
 if not df.empty:
     fig = go.Figure(data=[
         go.Bar(
@@ -82,24 +80,34 @@ if not df.empty:
         yaxis2=dict(title="Win Rate (%)", side="right", overlaying="y"),
         legend=dict(x=0.1, y=1.1, orientation="h")
     )
+    fig.update_layout(layout)
 else:
     fig = go.Figure(data=[go.Bar(x=[], y=[], name="No Data"), go.Scatter(x=[], y=[], name="No Data")])
-    layout = go.Layout(title="No Bullet Games Found", height=500)
+    fig.update_layout(title="No Bullet Games Found", height=500)
 
-app.layout = html.Div([
-    html.H1("Bullet Chess Dashboard – Last 2 Months", className="text-center my-4"),
-    dcc.Graph(figure={"data": fig.data, "layout": layout}),
-    html.H3("Daily Summary Table", className="text-center my-3"),
-    dbc.Table.from_dataframe(
-        df if not df.empty else pd.DataFrame(columns=["Date", "Games", "Wins", "Win Rate (%)", "Flag"]),
-        striped=True,
-        bordered=True,
-        hover=True,
-        responsive=True,
-        style={"textAlign": "center"}
-    ) if not df.empty else html.P("No data available.", className="text-center")
-], style={"maxWidth": "1200px", "margin": "auto"})
-
-# Save dashboard as HTML
+# --- GENERATE HTML ---
+html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bullet Chess Dashboard</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; max-width: 1200px; margin: auto; text-align: center; }}
+        table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: center; }}
+        th {{ background-color: #f2f2f2; }}
+        tr:nth-child(even) {{ background-color: #f9f9f9; }}
+        tr:hover {{ background-color: #f5f5f5; }}
+    </style>
+</head>
+<body>
+    <h1>Bullet Chess Dashboard – Last 2 Months</h1>
+    {pio.to_html(fig, full_html=False, include_plotlyjs='cdn')}
+    <h3>Daily Summary Table</h3>
+    {df.to_html(index=False, classes='table', justify='center') if not df.empty else '<p>No data available.</p>'}
+</body>
+</html>
+"""
 with open("index.html", "w") as f:
-    f.write(app.index())
+    f.write(html_content)
+    print("Generated index.html")
